@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My First Dapp</title>
+</head>
+<body>
+    <h1>My first dApp</h1>
+    <label for="mood">Input</label>
+    <input type="text" placeholder="enter mood" id="mood">
+    <div>
+        <button onclick="setmood()">Set mood</button>
+    </div>
+        <div>
+            <button onclick="getmood()">Get mood</button>
+        </div>
+</body>
+<script
+src="https://cdn.ethers.io/scripts/ethers-v4.min.js"
+type="text/javascript"
+></script>
+<script>
+    //window.ethereum.enable() will check the window has a crypto wallet intalled or not
+    window.ethereum.enable();
+    //creating a provider now
+    var provider=new ethers.providers.Web3Provider(
+    //this the way that the person if havinga metamask will give the details
+    web3.currentProvider,
+    "ropsten"
+    );
+    var moodAddress="0x1761CeFe402eA5eEbE14586ac9354CEaCC705974";
+    var moodAbi=[
+	{
+		"inputs": [],
+		"name": "getmood",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "dummymood",
+				"type": "string"
+			}
+		],
+		"name": "setmood",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}
+    ]
+    var moodContract;
+    var signer;
+    //now using the provider details to call teh functions
+    provider.listAccounts().then(function(accounts){
+        //if we found the accounts or account of the provider then call teh function and get a signer and make a contract to call the functions
+        signer=provider.getSigner(accounts[0]);
+        //fetching the first most account of the provider and getting a signer by using getSigner of the firsta ccount of teh provider
+            //making teh contract having mood address and mood abi but the provider signer 
+            moodContract=new ethers.Contract(
+                moodAddress,
+                moodAbi,
+                signer
+            );
+    });
+    //now calling teh functions by using the created contract which contains the written contract mood address and mood abi which has 2 function get and set mood and a provider signer which is having address of the users/provider account  
+async function getmood(){
+moodPromise=moodContract.getmood();//calling the getmood function by using created contract and returning teh promise of that 
+//when we will get the promise of the function using contract 
+//print that in console
+var moodp=await moodPromise;
+console.log(moodp);
+}
+
+async function setmood(){
+//just get the mood from the input and pass it in the setmood func
+let moodnew=document.getElementById("mood").value;
+//selected the element of the input,now just pass the input the function using the contract of signer(accounrt add),moodabi,moodaddress,and it will return a promise
+setmoodpromise=moodContract.setmood(moodnew);
+await setmoodpromise;
+}
+
+</script>
+</html>
